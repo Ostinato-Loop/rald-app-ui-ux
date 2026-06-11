@@ -142,5 +142,3 @@ function Field({
   }
   return <SettingRow icon={Icon} label={label} value={value} onClick={onEdit} />;
 }
-
-const _ = cn;
