@@ -1,10 +1,11 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
-import { LogOut } from "lucide-react";
 import { AuroraShell } from "@/components/rald/AuroraShell";
 import { RaldWordmark } from "@/components/rald/RaldLogo";
+import { RaldAvatar } from "@/components/rald/RaldAvatar";
+import { AccountSwitcher } from "@/components/rald/AccountSwitcher";
 import { ECOSYSTEM, TONE_STYLES } from "@/lib/ecosystem";
-import { clearIdentity, initials, useIdentity } from "@/lib/identity";
+import { useIdentity } from "@/lib/identity";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/welcome")({
