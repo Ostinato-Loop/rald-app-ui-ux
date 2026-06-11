@@ -92,7 +92,8 @@ export function downloadAccountReport(identity: RaldIdentity) {
 
   y += 36;
   checkupItems(identity).forEach((item) => {
-    doc.setFillColor(...(item.done ? GREEN : [220, 224, 222]));
+    const dot: [number, number, number] = item.done ? GREEN : [220, 224, 222];
+    doc.setFillColor(...dot);
     doc.circle(M + 6, y - 4, 6, "F");
     doc.setTextColor(255, 255, 255);
     doc.setFont("helvetica", "bold");
