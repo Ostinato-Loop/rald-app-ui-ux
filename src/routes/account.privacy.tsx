@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { SectionCard, SettingRow } from "@/components/rald/AccountUI";
 import { clearIdentity, useIdentity } from "@/lib/identity";
+import { downloadAccountReport } from "@/lib/report";
 
 export const Route = createFileRoute("/account/privacy")({
   component: Privacy,
