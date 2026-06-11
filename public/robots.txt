@@ -1,3 +1,13 @@
 User-agent: *
-Allow: /
-Disallow: /account
+  Allow: /
+  Disallow: /account
+  Disallow: /api
+  Disallow: /_server
+
+  # No tracking or analytics bots
+  User-agent: AhrefsBot
+  Disallow: /
+
+  User-agent: SemrushBot
+  Disallow: /
+  

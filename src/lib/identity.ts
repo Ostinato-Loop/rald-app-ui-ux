@@ -151,3 +151,39 @@ export function initials(identity: RaldIdentity): string {
   if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
   return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
 }
+
+  /* ── Session sync (from auth.rald.cloud) ───────────────────── */
+
+  export type SessionUser = {
+    username:         string;
+    rald_internal_id: string;
+    phone?:           string;
+    email?:           string;
+    display_name?:    string;
+    avatar_url?:      string;
+    created_at?:      string;
+    two_factor?:      boolean;
+  };
+
+  /**
+   * Populate localStorage identity from a validated auth.rald.cloud session.
+   * Called after the `?rald_token=` SSO handoff from profiles.rald.cloud.
+   */
+  export function syncFromSession(user: SessionUser): RaldIdentity {
+    const clean = user.username.toLowerCase().replace(/^@/, "");
+    const displayName =
+      user.display_name ||
+      clean.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+    const identity: RaldIdentity = {
+      username:      clean,
+      displayName,
+      phone:         user.phone,
+      email:         user.email,
+      emailVerified: !!user.email,
+      createdAt:     user.created_at ?? new Date().toISOString(),
+      twoFactor:     user.two_factor ?? false,
+    };
+    saveIdentity(identity);
+    return identity;
+  }
+  

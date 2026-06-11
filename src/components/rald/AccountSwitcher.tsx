@@ -9,6 +9,7 @@ import {
   useAccounts,
   useIdentity,
 } from "@/lib/identity";
+import { getStoredToken, revokeSession, clearStoredToken, getAuthUrl } from "@/lib/auth";
 import { cn } from "@/lib/utils";
 
 /** Compact account switcher used in the welcome + account headers. */
@@ -102,8 +103,13 @@ export function AccountSwitcher() {
           <button
             onClick={() => {
               setOpen(false);
+              void (async () => {
+              const tok = getStoredToken();
+              if (tok) await revokeSession(tok);
+              clearStoredToken();
               clearIdentity();
-              navigate({ to: "/login" });
+              window.location.href = getAuthUrl("/login");
+            })();
             }}
             className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-left text-sm font-semibold transition-colors hover:bg-muted"
           >
