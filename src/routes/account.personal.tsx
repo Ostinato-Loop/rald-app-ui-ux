@@ -3,7 +3,6 @@ import { createFileRoute } from "@tanstack/react-router";
 import { UserRound, AtSign, Mail, Phone, Cake, MapPin, Check, X } from "lucide-react";
 import { SectionCard, SettingRow } from "@/components/rald/AccountUI";
 import { saveIdentity, useIdentity } from "@/lib/identity";
-import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/account/personal")({
   component: PersonalInfo,
