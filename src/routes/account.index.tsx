@@ -8,6 +8,12 @@ import {
   CircleCheck,
   ChevronRight,
   FileDown,
+  Radio,
+  Shield,
+  Globe2,
+  MessageSquare,
+  Mail,
+  CreditCard,
 } from "lucide-react";
 import { SectionCard, SettingRow } from "@/components/rald/AccountUI";
 import { RaldAvatar } from "@/components/rald/RaldAvatar";
@@ -148,6 +154,91 @@ function AccountHome() {
           }
         />
       </SectionCard>
+
+      {/* RALD Connected Products */}
+      <SectionCard
+        title="RALD Products"
+        description="Services connected to your RALD identity"
+      >
+        {[
+          {
+            icon: Radio,
+            label: "Loop",
+            value: "Live audio rooms · loop.rald.cloud",
+            href: "https://loop.rald.cloud",
+            statusColor: "text-emerald-500",
+            status: "Active",
+            to: "/account/loop",
+          },
+          {
+            icon: MessageSquare,
+            label: "Messenger",
+            value: "Private messaging across RALD",
+            href: "https://messenger.rald.cloud",
+            statusColor: "text-emerald-500",
+            status: "Active",
+            to: null,
+          },
+          {
+            icon: Mail,
+            label: "RALD Mail",
+            value: "username@rald.me — your African address",
+            href: null,
+            statusColor: "text-amber-500",
+            status: "Coming soon",
+            to: null,
+          },
+          {
+            icon: CreditCard,
+            label: "PayRald",
+            value: "Payments, transfers & financial tools",
+            href: null,
+            statusColor: "text-amber-500",
+            status: "Coming soon",
+            to: null,
+          },
+        ].map((product) => (
+          <SettingRow
+            key={product.label}
+            icon={product.icon}
+            label={product.label}
+            value={product.value}
+            action={
+              product.to ? (
+                <Link to={product.to} className="contents">
+                  <span className={`text-[10px] font-bold ${product.statusColor} mr-1`}>{product.status}</span>
+                  <ChevronRight size={18} className="text-muted-foreground" />
+                </Link>
+              ) : product.href ? (
+                <a href={product.href} target="_blank" rel="noopener noreferrer" className="contents">
+                  <span className={`text-[10px] font-bold ${product.statusColor} mr-1`}>{product.status}</span>
+                  <ChevronRight size={18} className="text-muted-foreground" />
+                </a>
+              ) : (
+                <span className={`text-[10px] font-bold ${product.statusColor} bg-amber-500/10 px-2 py-0.5 rounded-full`}>{product.status}</span>
+              )
+            }
+          />
+        ))}
+      </SectionCard>
+
+      {/* Regional & Trust quick links */}
+      <div className="flex gap-2">
+        <Link
+          to="/account/regional"
+          className="flex-1 flex items-center gap-2 rounded-2xl border border-border bg-surface px-4 py-3 text-sm font-bold text-muted-foreground hover:bg-green-soft hover:text-green transition-colors"
+        >
+          <Globe2 size={16} className="text-green shrink-0" />
+          Regional Access
+        </Link>
+        <Link
+          to="/account/trust"
+          className="flex-1 flex items-center gap-2 rounded-2xl border border-border bg-surface px-4 py-3 text-sm font-bold text-muted-foreground hover:bg-green-soft hover:text-green transition-colors"
+        >
+          <Shield size={16} className="text-green shrink-0" />
+          Trust & Verification
+        </Link>
+      </div>
 
       <button
         onClick={() => downloadAccountReport(identity)}
