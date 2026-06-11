@@ -6,11 +6,46 @@ export type RaldIdentity = {
   email?: string;
   phone?: string;
   recoveryEmail?: string;
+  avatar?: string; // data URL
+  emailVerified?: boolean;
   createdAt: string;
   twoFactor: boolean;
 };
 
 const KEY = "rald.identity";
+const ACCOUNTS_KEY = "rald.accounts";
+export const IDENTITY_EVENT = "rald-identity-change";
+
+function emit() {
+  if (typeof window === "undefined") return;
+  window.dispatchEvent(new Event(IDENTITY_EVENT));
+}
+
+/* ---------------- accounts store ---------------- */
+
+export function listAccounts(): RaldIdentity[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = window.localStorage.getItem(ACCOUNTS_KEY);
+    return raw ? (JSON.parse(raw) as RaldIdentity[]) : [];
+  } catch {
+    return [];
+  }
+}
+
+function writeAccounts(accounts: RaldIdentity[]) {
+  window.localStorage.setItem(ACCOUNTS_KEY, JSON.stringify(accounts));
+}
+
+function upsertAccount(identity: RaldIdentity) {
+  const accounts = listAccounts();
+  const idx = accounts.findIndex((a) => a.username === identity.username);
+  if (idx >= 0) accounts[idx] = identity;
+  else accounts.push(identity);
+  writeAccounts(accounts);
+}
+
+/* ---------------- active identity ---------------- */
 
 export function loadIdentity(): RaldIdentity | null {
   if (typeof window === "undefined") return null;
@@ -25,17 +60,41 @@ export function loadIdentity(): RaldIdentity | null {
 export function saveIdentity(identity: RaldIdentity) {
   if (typeof window === "undefined") return;
   window.localStorage.setItem(KEY, JSON.stringify(identity));
-  window.dispatchEvent(new Event("rald-identity-change"));
+  upsertAccount(identity);
+  emit();
 }
 
 export function clearIdentity() {
   if (typeof window === "undefined") return;
   window.localStorage.removeItem(KEY);
-  window.dispatchEvent(new Event("rald-identity-change"));
+  emit();
+}
+
+/** Remove an account entirely (and sign out if it was active). */
+export function removeAccount(username: string) {
+  if (typeof window === "undefined") return;
+  writeAccounts(listAccounts().filter((a) => a.username !== username));
+  const active = loadIdentity();
+  if (active?.username === username) window.localStorage.removeItem(KEY);
+  emit();
+}
+
+/** Switch the active session to an already-saved account. */
+export function switchAccount(username: string): RaldIdentity | null {
+  const account = listAccounts().find((a) => a.username === username);
+  if (!account) return null;
+  window.localStorage.setItem(KEY, JSON.stringify(account));
+  emit();
+  return account;
 }
 
 export function createIdentity(username: string): RaldIdentity {
   const clean = username.replace(/^@/, "");
+  const existing = listAccounts().find((a) => a.username === clean);
+  if (existing) {
+    saveIdentity(existing);
+    return existing;
+  }
   const identity: RaldIdentity = {
     username: clean,
     displayName: clean
@@ -43,10 +102,13 @@ export function createIdentity(username: string): RaldIdentity {
       .replace(/\b\w/g, (c) => c.toUpperCase()),
     createdAt: new Date().toISOString(),
     twoFactor: false,
+    emailVerified: false,
   };
   saveIdentity(identity);
   return identity;
 }
+
+/* ---------------- hooks ---------------- */
 
 /** Reactive hook for the current identity. */
 export function useIdentity(): [RaldIdentity | null, boolean] {
@@ -57,15 +119,31 @@ export function useIdentity(): [RaldIdentity | null, boolean] {
     setIdentity(loadIdentity());
     setReady(true);
     const handler = () => setIdentity(loadIdentity());
-    window.addEventListener("rald-identity-change", handler);
+    window.addEventListener(IDENTITY_EVENT, handler);
     window.addEventListener("storage", handler);
     return () => {
-      window.removeEventListener("rald-identity-change", handler);
+      window.removeEventListener(IDENTITY_EVENT, handler);
       window.removeEventListener("storage", handler);
     };
   }, []);
 
   return [identity, ready];
+}
+
+/** Reactive hook for all stored accounts. */
+export function useAccounts(): RaldIdentity[] {
+  const [accounts, setAccounts] = useState<RaldIdentity[]>([]);
+  useEffect(() => {
+    setAccounts(listAccounts());
+    const handler = () => setAccounts(listAccounts());
+    window.addEventListener(IDENTITY_EVENT, handler);
+    window.addEventListener("storage", handler);
+    return () => {
+      window.removeEventListener(IDENTITY_EVENT, handler);
+      window.removeEventListener("storage", handler);
+    };
+  }, []);
+  return accounts;
 }
 
 export function initials(identity: RaldIdentity): string {
