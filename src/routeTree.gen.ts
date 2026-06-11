@@ -15,6 +15,7 @@ import { Route as AccountRouteImport } from './routes/account'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AccountIndexRouteImport } from './routes/account.index'
 import { Route as AccountSecurityRouteImport } from './routes/account.security'
+import { Route as AccountPrivacyRouteImport } from './routes/account.privacy'
 import { Route as AccountPersonalRouteImport } from './routes/account.personal'
 
 const WelcomeRoute = WelcomeRouteImport.update({
@@ -47,6 +48,11 @@ const AccountSecurityRoute = AccountSecurityRouteImport.update({
   path: '/security',
   getParentRoute: () => AccountRoute,
 } as any)
+const AccountPrivacyRoute = AccountPrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => AccountRoute,
+} as any)
 const AccountPersonalRoute = AccountPersonalRouteImport.update({
   id: '/personal',
   path: '/personal',
@@ -59,6 +65,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/welcome': typeof WelcomeRoute
   '/account/personal': typeof AccountPersonalRoute
+  '/account/privacy': typeof AccountPrivacyRoute
   '/account/security': typeof AccountSecurityRoute
   '/account/': typeof AccountIndexRoute
 }
@@ -67,6 +74,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/welcome': typeof WelcomeRoute
   '/account/personal': typeof AccountPersonalRoute
+  '/account/privacy': typeof AccountPrivacyRoute
   '/account/security': typeof AccountSecurityRoute
   '/account': typeof AccountIndexRoute
 }
@@ -77,6 +85,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/welcome': typeof WelcomeRoute
   '/account/personal': typeof AccountPersonalRoute
+  '/account/privacy': typeof AccountPrivacyRoute
   '/account/security': typeof AccountSecurityRoute
   '/account/': typeof AccountIndexRoute
 }
@@ -88,6 +97,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/welcome'
     | '/account/personal'
+    | '/account/privacy'
     | '/account/security'
     | '/account/'
   fileRoutesByTo: FileRoutesByTo
@@ -96,6 +106,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/welcome'
     | '/account/personal'
+    | '/account/privacy'
     | '/account/security'
     | '/account'
   id:
@@ -105,6 +116,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/welcome'
     | '/account/personal'
+    | '/account/privacy'
     | '/account/security'
     | '/account/'
   fileRoutesById: FileRoutesById
@@ -160,6 +172,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AccountSecurityRouteImport
       parentRoute: typeof AccountRoute
     }
+    '/account/privacy': {
+      id: '/account/privacy'
+      path: '/privacy'
+      fullPath: '/account/privacy'
+      preLoaderRoute: typeof AccountPrivacyRouteImport
+      parentRoute: typeof AccountRoute
+    }
     '/account/personal': {
       id: '/account/personal'
       path: '/personal'
@@ -172,12 +191,14 @@ declare module '@tanstack/react-router' {
 
 interface AccountRouteChildren {
   AccountPersonalRoute: typeof AccountPersonalRoute
+  AccountPrivacyRoute: typeof AccountPrivacyRoute
   AccountSecurityRoute: typeof AccountSecurityRoute
   AccountIndexRoute: typeof AccountIndexRoute
 }
 
 const AccountRouteChildren: AccountRouteChildren = {
   AccountPersonalRoute: AccountPersonalRoute,
+  AccountPrivacyRoute: AccountPrivacyRoute,
   AccountSecurityRoute: AccountSecurityRoute,
   AccountIndexRoute: AccountIndexRoute,
 }
