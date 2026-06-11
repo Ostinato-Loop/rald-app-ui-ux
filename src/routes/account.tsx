@@ -57,9 +57,7 @@ function AccountLayout() {
             <RaldWordmark />
             <span className="text-sm font-bold text-muted-foreground">Account</span>
           </div>
-          <div className="grid h-9 w-9 place-items-center rounded-full bg-green text-sm font-extrabold text-white">
-            {initials(identity)}
-          </div>
+          <AccountSwitcher />
         </div>
 
         {/* tab nav */}
