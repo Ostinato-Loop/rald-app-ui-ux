@@ -18,6 +18,9 @@ import { Route as AccountIndexRouteImport } from './routes/account.index'
 import { Route as AccountSecurityRouteImport } from './routes/account.security'
 import { Route as AccountPrivacyRouteImport } from './routes/account.privacy'
 import { Route as AccountPersonalRouteImport } from './routes/account.personal'
+import { Route as AccountLoopRouteImport } from './routes/account.loop'
+import { Route as AccountRegionalRouteImport } from './routes/account.regional'
+import { Route as AccountTrustRouteImport } from './routes/account.trust'
 
 const WelcomeRoute = WelcomeRouteImport.update({
   id: '/welcome',
@@ -64,6 +67,21 @@ const AccountPersonalRoute = AccountPersonalRouteImport.update({
   path: '/personal',
   getParentRoute: () => AccountRoute,
 } as any)
+const AccountLoopRoute = AccountLoopRouteImport.update({
+  id: '/loop',
+  path: '/loop',
+  getParentRoute: () => AccountRoute,
+} as any)
+const AccountRegionalRoute = AccountRegionalRouteImport.update({
+  id: '/regional',
+  path: '/regional',
+  getParentRoute: () => AccountRoute,
+} as any)
+const AccountTrustRoute = AccountTrustRouteImport.update({
+  id: '/trust',
+  path: '/trust',
+  getParentRoute: () => AccountRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -74,6 +92,9 @@ export interface FileRoutesByFullPath {
   '/account/personal': typeof AccountPersonalRoute
   '/account/privacy': typeof AccountPrivacyRoute
   '/account/security': typeof AccountSecurityRoute
+  '/account/loop': typeof AccountLoopRoute
+  '/account/regional': typeof AccountRegionalRoute
+  '/account/trust': typeof AccountTrustRoute
   '/account/': typeof AccountIndexRoute
 }
 export interface FileRoutesByTo {
@@ -84,6 +105,9 @@ export interface FileRoutesByTo {
   '/account/personal': typeof AccountPersonalRoute
   '/account/privacy': typeof AccountPrivacyRoute
   '/account/security': typeof AccountSecurityRoute
+  '/account/loop': typeof AccountLoopRoute
+  '/account/regional': typeof AccountRegionalRoute
+  '/account/trust': typeof AccountTrustRoute
   '/account': typeof AccountIndexRoute
 }
 export interface FileRoutesById {
@@ -96,6 +120,9 @@ export interface FileRoutesById {
   '/account/personal': typeof AccountPersonalRoute
   '/account/privacy': typeof AccountPrivacyRoute
   '/account/security': typeof AccountSecurityRoute
+  '/account/loop': typeof AccountLoopRoute
+  '/account/regional': typeof AccountRegionalRoute
+  '/account/trust': typeof AccountTrustRoute
   '/account/': typeof AccountIndexRoute
 }
 export interface FileRouteTypes {
@@ -109,6 +136,9 @@ export interface FileRouteTypes {
     | '/account/personal'
     | '/account/privacy'
     | '/account/security'
+    | '/account/loop'
+    | '/account/regional'
+    | '/account/trust'
     | '/account/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -119,6 +149,9 @@ export interface FileRouteTypes {
     | '/account/personal'
     | '/account/privacy'
     | '/account/security'
+    | '/account/loop'
+    | '/account/regional'
+    | '/account/trust'
     | '/account'
   id:
     | '__root__'
@@ -130,6 +163,9 @@ export interface FileRouteTypes {
     | '/account/personal'
     | '/account/privacy'
     | '/account/security'
+    | '/account/loop'
+    | '/account/regional'
+    | '/account/trust'
     | '/account/'
   fileRoutesById: FileRoutesById
 }
@@ -206,6 +242,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AccountPersonalRouteImport
       parentRoute: typeof AccountRoute
     }
+    '/account/loop': {
+      id: '/account/loop'
+      path: '/loop'
+      fullPath: '/account/loop'
+      preLoaderRoute: typeof AccountLoopRouteImport
+      parentRoute: typeof AccountRoute
+    }
+    '/account/regional': {
+      id: '/account/regional'
+      path: '/regional'
+      fullPath: '/account/regional'
+      preLoaderRoute: typeof AccountRegionalRouteImport
+      parentRoute: typeof AccountRoute
+    }
+    '/account/trust': {
+      id: '/account/trust'
+      path: '/trust'
+      fullPath: '/account/trust'
+      preLoaderRoute: typeof AccountTrustRouteImport
+      parentRoute: typeof AccountRoute
+    }
   }
 }
 
@@ -213,6 +270,9 @@ interface AccountRouteChildren {
   AccountPersonalRoute: typeof AccountPersonalRoute
   AccountPrivacyRoute: typeof AccountPrivacyRoute
   AccountSecurityRoute: typeof AccountSecurityRoute
+  AccountLoopRoute: typeof AccountLoopRoute
+  AccountRegionalRoute: typeof AccountRegionalRoute
+  AccountTrustRoute: typeof AccountTrustRoute
   AccountIndexRoute: typeof AccountIndexRoute
 }
 
@@ -220,6 +280,9 @@ const AccountRouteChildren: AccountRouteChildren = {
   AccountPersonalRoute: AccountPersonalRoute,
   AccountPrivacyRoute: AccountPrivacyRoute,
   AccountSecurityRoute: AccountSecurityRoute,
+  AccountLoopRoute: AccountLoopRoute,
+  AccountRegionalRoute: AccountRegionalRoute,
+  AccountTrustRoute: AccountTrustRoute,
   AccountIndexRoute: AccountIndexRoute,
 }
 
