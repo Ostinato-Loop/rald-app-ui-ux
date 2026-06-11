@@ -2,7 +2,8 @@ import { createFileRoute, Link, Outlet, useNavigate, useRouterState } from "@tan
 import { useEffect } from "react";
 import { ArrowLeft, Home, UserRound, ShieldCheck, Lock } from "lucide-react";
 import { RaldWordmark } from "@/components/rald/RaldLogo";
-import { initials, useIdentity } from "@/lib/identity";
+import { AccountSwitcher } from "@/components/rald/AccountSwitcher";
+import { useIdentity } from "@/lib/identity";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/account")({
@@ -56,9 +57,7 @@ function AccountLayout() {
             <RaldWordmark />
             <span className="text-sm font-bold text-muted-foreground">Account</span>
           </div>
-          <div className="grid h-9 w-9 place-items-center rounded-full bg-green text-sm font-extrabold text-white">
-            {initials(identity)}
-          </div>
+          <AccountSwitcher />
         </div>
 
         {/* tab nav */}

@@ -1,7 +1,21 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { UserRound, AtSign, Mail, Phone, Cake, MapPin, Check, X } from "lucide-react";
+import {
+  UserRound,
+  AtSign,
+  Mail,
+  Phone,
+  Cake,
+  MapPin,
+  Check,
+  X,
+  Camera,
+  BadgeCheck,
+  ShieldQuestion,
+} from "lucide-react";
 import { SectionCard, SettingRow } from "@/components/rald/AccountUI";
+import { RaldAvatar, fileToAvatar } from "@/components/rald/RaldAvatar";
+import { EmailVerifyDialog } from "@/components/rald/EmailVerifyDialog";
 import { saveIdentity, useIdentity } from "@/lib/identity";
 
 export const Route = createFileRoute("/account/personal")({
@@ -12,6 +26,8 @@ function PersonalInfo() {
   const [identity] = useIdentity();
   const [editing, setEditing] = useState<null | "displayName" | "email" | "phone">(null);
   const [draft, setDraft] = useState("");
+  const [verifyOpen, setVerifyOpen] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
 
   if (!identity) return null;
 
@@ -21,8 +37,21 @@ function PersonalInfo() {
   }
   function commit() {
     if (!identity || !editing) return;
-    saveIdentity({ ...identity, [editing]: draft.trim() });
+    const next = { ...identity, [editing]: draft.trim() };
+    // changing the email invalidates a previous verification
+    if (editing === "email" && draft.trim() !== identity.email) {
+      next.emailVerified = false;
+    }
+    saveIdentity(next);
     setEditing(null);
+  }
+
+  async function onPickAvatar(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file || !identity) return;
+    const avatar = await fileToAvatar(file);
+    saveIdentity({ ...identity, avatar });
+    e.target.value = "";
   }
 
   return (
@@ -32,6 +61,39 @@ function PersonalInfo() {
         <p className="mt-1 text-sm text-muted-foreground">
           Info about you and your preferences across RALD products.
         </p>
+      </div>
+
+      {/* avatar */}
+      <div className="flex flex-col items-center rounded-2xl border border-border bg-surface px-6 py-7 text-center shadow-[var(--shadow-rald)]">
+        <button
+          onClick={() => fileRef.current?.click()}
+          className="group relative"
+          aria-label="Change profile photo"
+        >
+          <RaldAvatar identity={identity} size={88} />
+          <span className="absolute -bottom-1 -right-1 grid h-8 w-8 place-items-center rounded-full border-2 border-surface bg-green text-white transition-transform group-hover:scale-105">
+            <Camera size={15} />
+          </span>
+        </button>
+        <input
+          ref={fileRef}
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={onPickAvatar}
+        />
+        <p className="mt-3 text-sm font-bold">{identity.displayName}</p>
+        <p className="text-xs text-muted-foreground">
+          Tap the photo to upload a new one
+        </p>
+        {identity.avatar && (
+          <button
+            onClick={() => saveIdentity({ ...identity, avatar: undefined })}
+            className="mt-2 text-xs font-semibold text-red"
+          >
+            Remove photo
+          </button>
+        )}
       </div>
 
       <SectionCard title="Profile">
@@ -64,6 +126,25 @@ function PersonalInfo() {
           onEdit={() => startEdit("email", identity.email)}
           onCancel={() => setEditing(null)}
           onSave={commit}
+          badge={
+            identity.email ? (
+              identity.emailVerified ? (
+                <span className="inline-flex items-center gap-1 rounded-full bg-green-soft px-2 py-0.5 text-[10px] font-bold text-green">
+                  <BadgeCheck size={11} /> Verified
+                </span>
+              ) : (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setVerifyOpen(true);
+                  }}
+                  className="inline-flex items-center gap-1 rounded-full bg-gold-soft px-2 py-0.5 text-[10px] font-bold text-gold"
+                >
+                  <ShieldQuestion size={11} /> Verify
+                </button>
+              )
+            ) : undefined
+          }
         />
         <Field
           icon={Phone}
@@ -83,6 +164,8 @@ function PersonalInfo() {
         <SettingRow icon={Cake} label="Birthday" value="Add your birthday" onClick={() => {}} />
         <SettingRow icon={MapPin} label="Location" value="Add your location" onClick={() => {}} />
       </SectionCard>
+
+      <EmailVerifyDialog open={verifyOpen} onClose={() => setVerifyOpen(false)} />
     </div>
   );
 }
@@ -98,6 +181,7 @@ function Field({
   onEdit,
   onCancel,
   onSave,
+  badge,
 }: {
   icon: typeof UserRound;
   label: string;
@@ -109,6 +193,7 @@ function Field({
   onEdit: () => void;
   onCancel: () => void;
   onSave: () => void;
+  badge?: React.ReactNode;
 }) {
   if (editing) {
     return (
@@ -140,5 +225,21 @@ function Field({
       </div>
     );
   }
-  return <SettingRow icon={Icon} label={label} value={value} onClick={onEdit} />;
+  return (
+    <SettingRow
+      icon={Icon}
+      label={label}
+      value={
+        badge ? (
+          <span className="flex items-center gap-2">
+            <span className="truncate">{value}</span>
+            {badge}
+          </span>
+        ) : (
+          value
+        )
+      }
+      onClick={onEdit}
+    />
+  );
 }

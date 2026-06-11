@@ -1,10 +1,11 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
-import { LogOut } from "lucide-react";
 import { AuroraShell } from "@/components/rald/AuroraShell";
 import { RaldWordmark } from "@/components/rald/RaldLogo";
+import { RaldAvatar } from "@/components/rald/RaldAvatar";
+import { AccountSwitcher } from "@/components/rald/AccountSwitcher";
 import { ECOSYSTEM, TONE_STYLES } from "@/lib/ecosystem";
-import { clearIdentity, initials, useIdentity } from "@/lib/identity";
+import { useIdentity } from "@/lib/identity";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/welcome")({
@@ -35,23 +36,17 @@ function WelcomePage() {
       {/* header */}
       <header className="flex items-center justify-between">
         <RaldWordmark />
-        <button
-          onClick={() => {
-            clearIdentity();
-            navigate({ to: "/" });
-          }}
-          className="flex items-center gap-1.5 rounded-full border border-border bg-surface px-3 py-1.5 text-xs font-semibold text-muted-foreground transition-colors hover:text-foreground"
-        >
-          <LogOut size={14} /> Sign out
-        </button>
+        <AccountSwitcher />
       </header>
 
       {/* greeting */}
       <div className="screen-enter mt-8">
         <div className="flex items-center gap-3.5">
-          <div className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-green text-lg font-extrabold text-white shadow-[0_4px_16px_oklch(0.52_0.15_150_/_0.3)]">
-            {initials(identity)}
-          </div>
+          <RaldAvatar
+            identity={identity}
+            size={56}
+            className="rounded-2xl shadow-[0_4px_16px_oklch(0.52_0.15_150_/_0.3)]"
+          />
           <div className="min-w-0">
             <p className="text-xs font-semibold uppercase tracking-[0.06em] text-muted-foreground">
               Welcome to RALD

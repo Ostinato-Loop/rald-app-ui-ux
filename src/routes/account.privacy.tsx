@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { SectionCard, SettingRow } from "@/components/rald/AccountUI";
 import { clearIdentity, useIdentity } from "@/lib/identity";
+import { downloadAccountReport } from "@/lib/report";
 
 export const Route = createFileRoute("/account/privacy")({
   component: Privacy,
@@ -59,8 +60,8 @@ function Privacy() {
         <SettingRow
           icon={Download}
           label="Download your data"
-          value="Export everything tied to your identity"
-          onClick={() => {}}
+          value="Export your identity & security report as PDF"
+          onClick={() => downloadAccountReport(identity)}
         />
         <SettingRow
           icon={Trash2}
