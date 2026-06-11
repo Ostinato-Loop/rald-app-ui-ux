@@ -13,6 +13,7 @@ import { Route as WelcomeRouteImport } from './routes/welcome'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AccountRouteImport } from './routes/account'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AccountIndexRouteImport } from './routes/account.index'
 
 const WelcomeRoute = WelcomeRouteImport.update({
   id: '/welcome',
@@ -34,37 +35,44 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AccountIndexRoute = AccountIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AccountRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/account': typeof AccountRoute
+  '/account': typeof AccountRouteWithChildren
   '/login': typeof LoginRoute
   '/welcome': typeof WelcomeRoute
+  '/account/': typeof AccountIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/account': typeof AccountRoute
   '/login': typeof LoginRoute
   '/welcome': typeof WelcomeRoute
+  '/account': typeof AccountIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/account': typeof AccountRoute
+  '/account': typeof AccountRouteWithChildren
   '/login': typeof LoginRoute
   '/welcome': typeof WelcomeRoute
+  '/account/': typeof AccountIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/account' | '/login' | '/welcome'
+  fullPaths: '/' | '/account' | '/login' | '/welcome' | '/account/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/account' | '/login' | '/welcome'
-  id: '__root__' | '/' | '/account' | '/login' | '/welcome'
+  to: '/' | '/login' | '/welcome' | '/account'
+  id: '__root__' | '/' | '/account' | '/login' | '/welcome' | '/account/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AccountRoute: typeof AccountRoute
+  AccountRoute: typeof AccountRouteWithChildren
   LoginRoute: typeof LoginRoute
   WelcomeRoute: typeof WelcomeRoute
 }
@@ -99,15 +107,43 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/account/': {
+      id: '/account/'
+      path: '/'
+      fullPath: '/account/'
+      preLoaderRoute: typeof AccountIndexRouteImport
+      parentRoute: typeof AccountRoute
+    }
   }
 }
 
+interface AccountRouteChildren {
+  AccountIndexRoute: typeof AccountIndexRoute
+}
+
+const AccountRouteChildren: AccountRouteChildren = {
+  AccountIndexRoute: AccountIndexRoute,
+}
+
+const AccountRouteWithChildren =
+  AccountRoute._addFileChildren(AccountRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AccountRoute: AccountRoute,
+  AccountRoute: AccountRouteWithChildren,
   LoginRoute: LoginRoute,
   WelcomeRoute: WelcomeRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
