@@ -14,6 +14,7 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as AccountRouteImport } from './routes/account'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AccountIndexRouteImport } from './routes/account.index'
+import { Route as AccountSecurityRouteImport } from './routes/account.security'
 import { Route as AccountPersonalRouteImport } from './routes/account.personal'
 
 const WelcomeRoute = WelcomeRouteImport.update({
@@ -41,6 +42,11 @@ const AccountIndexRoute = AccountIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AccountRoute,
 } as any)
+const AccountSecurityRoute = AccountSecurityRouteImport.update({
+  id: '/security',
+  path: '/security',
+  getParentRoute: () => AccountRoute,
+} as any)
 const AccountPersonalRoute = AccountPersonalRouteImport.update({
   id: '/personal',
   path: '/personal',
@@ -53,6 +59,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/welcome': typeof WelcomeRoute
   '/account/personal': typeof AccountPersonalRoute
+  '/account/security': typeof AccountSecurityRoute
   '/account/': typeof AccountIndexRoute
 }
 export interface FileRoutesByTo {
@@ -60,6 +67,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/welcome': typeof WelcomeRoute
   '/account/personal': typeof AccountPersonalRoute
+  '/account/security': typeof AccountSecurityRoute
   '/account': typeof AccountIndexRoute
 }
 export interface FileRoutesById {
@@ -69,6 +77,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/welcome': typeof WelcomeRoute
   '/account/personal': typeof AccountPersonalRoute
+  '/account/security': typeof AccountSecurityRoute
   '/account/': typeof AccountIndexRoute
 }
 export interface FileRouteTypes {
@@ -79,9 +88,16 @@ export interface FileRouteTypes {
     | '/login'
     | '/welcome'
     | '/account/personal'
+    | '/account/security'
     | '/account/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/welcome' | '/account/personal' | '/account'
+  to:
+    | '/'
+    | '/login'
+    | '/welcome'
+    | '/account/personal'
+    | '/account/security'
+    | '/account'
   id:
     | '__root__'
     | '/'
@@ -89,6 +105,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/welcome'
     | '/account/personal'
+    | '/account/security'
     | '/account/'
   fileRoutesById: FileRoutesById
 }
@@ -136,6 +153,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AccountIndexRouteImport
       parentRoute: typeof AccountRoute
     }
+    '/account/security': {
+      id: '/account/security'
+      path: '/security'
+      fullPath: '/account/security'
+      preLoaderRoute: typeof AccountSecurityRouteImport
+      parentRoute: typeof AccountRoute
+    }
     '/account/personal': {
       id: '/account/personal'
       path: '/personal'
@@ -148,11 +172,13 @@ declare module '@tanstack/react-router' {
 
 interface AccountRouteChildren {
   AccountPersonalRoute: typeof AccountPersonalRoute
+  AccountSecurityRoute: typeof AccountSecurityRoute
   AccountIndexRoute: typeof AccountIndexRoute
 }
 
 const AccountRouteChildren: AccountRouteChildren = {
   AccountPersonalRoute: AccountPersonalRoute,
+  AccountSecurityRoute: AccountSecurityRoute,
   AccountIndexRoute: AccountIndexRoute,
 }
 
@@ -168,3 +194,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
