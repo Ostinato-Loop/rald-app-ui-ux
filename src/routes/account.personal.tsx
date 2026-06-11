@@ -17,7 +17,6 @@ import { SectionCard, SettingRow } from "@/components/rald/AccountUI";
 import { RaldAvatar, fileToAvatar } from "@/components/rald/RaldAvatar";
 import { EmailVerifyDialog } from "@/components/rald/EmailVerifyDialog";
 import { saveIdentity, useIdentity } from "@/lib/identity";
-import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/account/personal")({
   component: PersonalInfo,
