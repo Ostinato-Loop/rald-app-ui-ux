@@ -1,6 +1,6 @@
 import { createFileRoute, Link, Outlet, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useEffect } from "react";
-import { ArrowLeft, Home, UserRound, ShieldCheck, Lock } from "lucide-react";
+import { ArrowLeft, Home, UserRound, ShieldCheck, Lock, Radio, Shield, Globe2 } from "lucide-react";
 import { RaldWordmark } from "@/components/rald/RaldLogo";
 import { AccountSwitcher } from "@/components/rald/AccountSwitcher";
 import { useIdentity } from "@/lib/identity";
@@ -21,10 +21,13 @@ export const Route = createFileRoute("/account")({
 });
 
 const TABS = [
-  { to: "/account", label: "Home", icon: Home, exact: true },
+  { to: "/account",          label: "Home",          icon: Home,      exact: true  },
   { to: "/account/personal", label: "Personal info", icon: UserRound, exact: false },
-  { to: "/account/security", label: "Security", icon: ShieldCheck, exact: false },
-  { to: "/account/privacy", label: "Data & privacy", icon: Lock, exact: false },
+  { to: "/account/security", label: "Security",      icon: ShieldCheck, exact: false },
+  { to: "/account/privacy",  label: "Data & privacy",icon: Lock,      exact: false },
+  { to: "/account/loop",     label: "Loop",          icon: Radio,     exact: false },
+  { to: "/account/trust",    label: "Trust",         icon: Shield,    exact: false },
+  { to: "/account/regional", label: "Regional",      icon: Globe2,    exact: false },
 ] as const;
 
 function AccountLayout() {
