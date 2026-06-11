@@ -14,6 +14,7 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as AccountRouteImport } from './routes/account'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AccountIndexRouteImport } from './routes/account.index'
+import { Route as AccountPersonalRouteImport } from './routes/account.personal'
 
 const WelcomeRoute = WelcomeRouteImport.update({
   id: '/welcome',
@@ -40,18 +41,25 @@ const AccountIndexRoute = AccountIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AccountRoute,
 } as any)
+const AccountPersonalRoute = AccountPersonalRouteImport.update({
+  id: '/personal',
+  path: '/personal',
+  getParentRoute: () => AccountRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/account': typeof AccountRouteWithChildren
   '/login': typeof LoginRoute
   '/welcome': typeof WelcomeRoute
+  '/account/personal': typeof AccountPersonalRoute
   '/account/': typeof AccountIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/welcome': typeof WelcomeRoute
+  '/account/personal': typeof AccountPersonalRoute
   '/account': typeof AccountIndexRoute
 }
 export interface FileRoutesById {
@@ -60,14 +68,28 @@ export interface FileRoutesById {
   '/account': typeof AccountRouteWithChildren
   '/login': typeof LoginRoute
   '/welcome': typeof WelcomeRoute
+  '/account/personal': typeof AccountPersonalRoute
   '/account/': typeof AccountIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/account' | '/login' | '/welcome' | '/account/'
+  fullPaths:
+    | '/'
+    | '/account'
+    | '/login'
+    | '/welcome'
+    | '/account/personal'
+    | '/account/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/welcome' | '/account'
-  id: '__root__' | '/' | '/account' | '/login' | '/welcome' | '/account/'
+  to: '/' | '/login' | '/welcome' | '/account/personal' | '/account'
+  id:
+    | '__root__'
+    | '/'
+    | '/account'
+    | '/login'
+    | '/welcome'
+    | '/account/personal'
+    | '/account/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -114,14 +136,23 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AccountIndexRouteImport
       parentRoute: typeof AccountRoute
     }
+    '/account/personal': {
+      id: '/account/personal'
+      path: '/personal'
+      fullPath: '/account/personal'
+      preLoaderRoute: typeof AccountPersonalRouteImport
+      parentRoute: typeof AccountRoute
+    }
   }
 }
 
 interface AccountRouteChildren {
+  AccountPersonalRoute: typeof AccountPersonalRoute
   AccountIndexRoute: typeof AccountIndexRoute
 }
 
 const AccountRouteChildren: AccountRouteChildren = {
+  AccountPersonalRoute: AccountPersonalRoute,
   AccountIndexRoute: AccountIndexRoute,
 }
 
