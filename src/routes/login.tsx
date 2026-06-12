@@ -37,9 +37,9 @@ import { useState, useEffect } from "react";
 
     function submit(e: React.FormEvent) {
       e.preventDefault();
-      // Hand off to profiles.rald.cloud/login.
+      // Hand off to profiles.rald.cloud/login with the typed username as a hint.
       // After auth, profiles redirects back to app.rald.cloud with ?rald_token=
-      window.location.href = getAuthUrl("/login");
+      window.location.href = getAuthUrl("/login", username.trim() || undefined);
     }
 
     return (
