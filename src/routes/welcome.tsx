@@ -34,7 +34,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
         // Already have local identity — optionally silently revalidate token in background
         if (token) {
           validateSession(token).then((r) => {
-            if (!r?.ok) clearStoredToken(); // token expired, identity stays (offline-friendly)
+            if (!r?.valid) clearStoredToken(); // token expired, identity stays (offline-friendly)
           }).catch(() => { /* noop */ });
         }
         return;
@@ -43,7 +43,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
       if (token) {
         // Token present but no local identity — rehydrate from auth server
         validateSession(token).then((r) => {
-          if (r?.ok && r.user) {
+          if (r?.valid && r.user) {
             syncFromSession(r.user);
           } else {
             clearStoredToken();
