@@ -44,7 +44,7 @@ import { createFileRoute, Link, Outlet, useNavigate, useRouterState } from "@tan
 
       if (token) {
         validateSession(token).then((r) => {
-          if (r?.ok && r.user) {
+          if (r?.valid && r.user) {
             syncFromSession(r.user);
           } else {
             clearStoredToken();
