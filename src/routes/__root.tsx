@@ -144,7 +144,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
       if (!raldToken) return;
 
       validateSession(raldToken).then((result) => {
-        if (result?.ok && result.user) {
+        if (result?.valid && result.user) {
           storeToken(raldToken);
           syncFromSession(result.user);
           // Scrub token from URL — never leave auth tokens in browser history
