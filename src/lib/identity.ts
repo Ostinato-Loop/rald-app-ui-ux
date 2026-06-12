@@ -152,38 +152,66 @@ export function initials(identity: RaldIdentity): string {
   return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
 }
 
-  /* ── Session sync (from auth.rald.cloud) ───────────────────── */
+/* ── Session sync (from auth.rald.cloud /profiles/me) ────────── */
 
-  export type SessionUser = {
-    username:         string;
-    rald_internal_id: string;
-    phone?:           string;
-    email?:           string;
-    display_name?:    string;
-    avatar_url?:      string;
-    created_at?:      string;
-    two_factor?:      boolean;
+/**
+ * Shape returned by GET /profiles/me on auth.rald.cloud.
+ *
+ * FIX: Previously expected { username, rald_internal_id, phone, display_name }
+ *   from the /session endpoint, but /session only returns { id, email, role }.
+ *   validateSession() now calls /profiles/me after the token check to get the
+ *   full profile — this type reflects that richer shape.
+ */
+export type SessionUser = {
+  /** RALD user UUID */
+  id:              string;
+  /** @username from auth_users.username */
+  username?:       string;
+  email?:          string;
+  /** Full name from auth_users.name */
+  name?:           string;
+  /** Friendly display name from auth_user_profiles.display_name */
+  display_name?:   string;
+  phone_number?:   string;
+  avatar_url?:     string;
+  created_at?:     string;
+  two_factor?:     boolean;
+  rald_internal_id?: string;
+};
+
+/**
+ * Populate (or refresh) the localStorage identity from a validated
+ * auth.rald.cloud /profiles/me response.
+ *
+ * Called after the ?rald_token= SSO handoff from profiles.rald.cloud and
+ * on silent revalidation in the welcome / account layouts.
+ *
+ * FIX: Previously called user.username.toLowerCase() which threw a TypeError
+ *   when username was undefined (the old /session endpoint never included it).
+ *   Now uses a safe fallback chain: username → email prefix → "rald_user".
+ */
+export function syncFromSession(user: SessionUser): RaldIdentity {
+  const rawUsername =
+    user.username ??
+    user.email?.split("@")[0] ??
+    "rald_user";
+  const clean = rawUsername.toLowerCase().replace(/^@/, "");
+
+  const displayName =
+    user.display_name ||
+    user.name ||
+    clean.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+
+  const identity: RaldIdentity = {
+    username:      clean,
+    displayName,
+    phone:         user.phone_number,
+    email:         user.email,
+    emailVerified: !!user.email,
+    createdAt:     user.created_at ?? new Date().toISOString(),
+    twoFactor:     user.two_factor ?? false,
+    avatar:        user.avatar_url ?? undefined,
   };
-
-  /**
-   * Populate localStorage identity from a validated auth.rald.cloud session.
-   * Called after the `?rald_token=` SSO handoff from profiles.rald.cloud.
-   */
-  export function syncFromSession(user: SessionUser): RaldIdentity {
-    const clean = user.username.toLowerCase().replace(/^@/, "");
-    const displayName =
-      user.display_name ||
-      clean.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
-    const identity: RaldIdentity = {
-      username:      clean,
-      displayName,
-      phone:         user.phone,
-      email:         user.email,
-      emailVerified: !!user.email,
-      createdAt:     user.created_at ?? new Date().toISOString(),
-      twoFactor:     user.two_factor ?? false,
-    };
-    saveIdentity(identity);
-    return identity;
-  }
-  
+  saveIdentity(identity);
+  return identity;
+}
